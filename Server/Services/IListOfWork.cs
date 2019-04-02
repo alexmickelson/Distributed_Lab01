@@ -8,6 +8,6 @@ namespace Server.Services
 {
     public interface IListOfWork
     {
-        List<MessageDto> getWork();
+        List<WorkItem> getWork();
     }
 }

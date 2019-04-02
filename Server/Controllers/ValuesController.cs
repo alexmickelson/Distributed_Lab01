@@ -64,7 +64,7 @@ namespace Server.Controllers
 
         // POST api/values
         [HttpPost]
-        public List<MessageDto> Post([FromBody]List<MessageDto> messages)
+        public List<WorkItem> Post([FromBody]List<WorkItem> messages)
         {
             int epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
             var rand = new Random();
@@ -146,7 +146,7 @@ namespace Server.Controllers
 
         // GET api/values/getwork
         [HttpGet]
-        public IEnumerable<MessageDto> GetWork()
+        public IEnumerable<WorkItem> GetWork()
         {
             Console.WriteLine("sending work to worker");
             return _listOfWork.getWork();

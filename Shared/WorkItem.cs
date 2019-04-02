@@ -2,9 +2,9 @@
 
 namespace Shared
 {
-    public class MessageDto
+    public class WorkItem
     {
-        public MessageDto(string key, string value)
+        public WorkItem(string key, string value)
         {
             Key = key;
             Value = value;

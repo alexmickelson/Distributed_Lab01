@@ -30,7 +30,7 @@ namespace Distributed_Lab01
 
 
             var work = await client.GetStringAsync("http://server/api/values/getwork");
-            var listOfWork = JsonConvert.DeserializeObject<List<MessageDto>>(work);
+            var listOfWork = JsonConvert.DeserializeObject<List<WorkItem>>(work);
 
             Console.WriteLine("Recieved Work:");
             foreach(var w in listOfWork)
@@ -56,7 +56,7 @@ namespace Distributed_Lab01
             Console.WriteLine("BATCH SUCCESSFUL");
             var stringResponse = await response3.Content.ReadAsStringAsync();
 
-            var responseMessage = JsonConvert.DeserializeObject<List<MessageDto>>(stringResponse);
+            var responseMessage = JsonConvert.DeserializeObject<List<WorkItem>>(stringResponse);
             foreach(var res in responseMessage)
             {
                 Console.WriteLine("Result from server: " + res.Result);
