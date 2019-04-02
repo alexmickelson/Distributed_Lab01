@@ -15,6 +15,7 @@ namespace Distributed_Lab01
     {
         static async Task Main(string[] args)
         {
+
             Console.WriteLine("Worker Started");
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
@@ -28,15 +29,29 @@ namespace Distributed_Lab01
 
             var work = await client.GetStringAsync("http://server/api/values/getwork");
             var listOfWork = JsonConvert.DeserializeObject<List<MessageDto>>(work);
-            Console.WriteLine(listOfWork[0].Key);
-            Console.WriteLine(listOfWork[0].Value);
 
+            Console.WriteLine("Recieved Work:");
+            foreach(var w in listOfWork)
+            {
+                Console.WriteLine(" "+w.Key);
+                Console.WriteLine(" " + w.Value);
 
-            var response = await client.GetStringAsync("http://server/api/values/Get");
-            Console.WriteLine(response);
+            }
+
+            
             
             var content = new StringContent(JsonConvert.SerializeObject(listOfWork), Encoding.UTF8, "application/json");
-            var response3 = await client.PostAsync("http://server/api/values/post", content);
+            HttpResponseMessage response3 = new HttpResponseMessage(System.Net.HttpStatusCode.NoContent);
+            while(response3.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                response3 = await client.PostAsync("http://server/api/values/post", content);
+                if (response3.StatusCode == System.Net.HttpStatusCode.NoContent)
+                {
+                    Console.WriteLine("BATCH FAILED trying again in 10 second");
+                }
+                Thread.Sleep(1000);
+            }
+            Console.WriteLine("BATCH SUCCESSFUL");
             var stringResponse = await response3.Content.ReadAsStringAsync();
 
             var responseMessage = JsonConvert.DeserializeObject<List<MessageDto>>(stringResponse);
