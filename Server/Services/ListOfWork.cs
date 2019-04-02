@@ -9,7 +9,6 @@ namespace Server.Services
     public class ListOfWork : IListOfWork
     {
         private static List<MessageDto> workToDo { get; set; }
-        private static int batchNums { get; set; } = 0;
 
         public ListOfWork()
         {
@@ -30,36 +29,39 @@ namespace Server.Services
 
         public List<MessageDto> getWork()
         {
-            var b = batchNums++;
-            var res = new List<MessageDto>();
+            lock (workToDo)
+            {
+                var res = new List<MessageDto>();
 
-            var work = workToDo.First();
-            workToDo.Remove(work);
+                var work = workToDo.First();
+                workToDo.Remove(work);
             
-            res.Add(work);
+                res.Add(work);
 
-            work = workToDo.First();
-            workToDo.Remove(work);
-            res.Add(work);
+                work = workToDo.First();
+                workToDo.Remove(work);
+                res.Add(work);
 
-            work = workToDo.First();
-            workToDo.Remove(work);
-            res.Add(work);
+                work = workToDo.First();
+                workToDo.Remove(work);
+                res.Add(work);
 
-            work = workToDo.First();
-            workToDo.Remove(work);
-            res.Add(work);
+                work = workToDo.First();
+                workToDo.Remove(work);
+                res.Add(work);
 
-            work = workToDo.First();
-            workToDo.Remove(work);
-            res.Add(work);
+                work = workToDo.First();
+                workToDo.Remove(work);
+                res.Add(work);
 
-            work = workToDo.First();
-            workToDo.Remove(work);
-            res.Add(work);
+                work = workToDo.First();
+                workToDo.Remove(work);
+                res.Add(work);
 
 
-            return res;
+                return res;
+
+            }
         }
     }
 }

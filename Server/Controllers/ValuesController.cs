@@ -68,7 +68,7 @@ namespace Server.Controllers
         {
             int epoch = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
             var rand = new Random();
-            var timeOut = rand.Next(5, 15);
+            var timeOut = rand.Next(5, 13);
 
             Console.WriteLine("attempting to do a batch of work");
             var openFiles = new List<FileStream>();
@@ -78,11 +78,15 @@ namespace Server.Controllers
                 while(stream == null)
                 {
                     stream = IsFileLocked(msg.Key);
+                    if (stream != null)
+                    {
+                        openFiles.Add(stream);
+                    }
                     if ((int)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds - epoch > timeOut)
                     {
                         Console.WriteLine($"Batched Timed Out After {timeOut} Seconds, returning null");
-
-                        foreach(var f in openFiles)
+                        timeOut = rand.Next(5, 15);
+                        foreach (var f in openFiles)
                         {
                             Console.WriteLine("     Closing File: " + f.Name);
                             f.Close();
@@ -92,7 +96,6 @@ namespace Server.Controllers
                     }
                     Thread.Sleep(100);
                 }
-                openFiles.Add(stream);
             }
             var res = new List<string[]>();
             for (int i = 0; i < openFiles.Count; i++)
@@ -101,11 +104,6 @@ namespace Server.Controllers
                 var str = new string[] { openFiles[i].Name, messages[i].Value };
                 res.Add(str);
                 messages[i].Result = $"Saved on server at {DateTime.Now}, Key: {messages[i].Key}, Value: {messages[i].Value}";
-            }
-            for (int i = 0; i < openFiles.Count; i++)
-            {
-                openFiles[i].Close();
-                Console.WriteLine("Closed file " + openFiles[i].Name);
             }
             Console.WriteLine("Write Complete, printing current state");
             foreach (var s in res)
@@ -116,6 +114,11 @@ namespace Server.Controllers
                 }
             }
             Console.WriteLine("");
+            for (int i = 0; i < openFiles.Count; i++)
+            {
+                openFiles[i].Close();
+                Console.WriteLine("Closed file " + openFiles[i].Name);
+            }
 
             return messages;
         }

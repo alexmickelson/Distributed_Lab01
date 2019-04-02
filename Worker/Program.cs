@@ -15,6 +15,8 @@ namespace Distributed_Lab01
     {
         static async Task Main(string[] args)
         {
+            var rand = new Random();
+            var timeOut = rand.Next(5,8);
 
             Console.WriteLine("Worker Started");
             var serviceCollection = new ServiceCollection();
@@ -24,7 +26,7 @@ namespace Distributed_Lab01
             var client = httpClientFactory.CreateClient();
 
             Console.WriteLine("Sleeping...");
-            Thread.Sleep(TimeSpan.FromSeconds(5));
+            Thread.Sleep(TimeSpan.FromSeconds(timeOut));
 
 
             var work = await client.GetStringAsync("http://server/api/values/getwork");
@@ -49,7 +51,7 @@ namespace Distributed_Lab01
                 {
                     Console.WriteLine("BATCH FAILED trying again in 10 second");
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(timeOut* 200);
             }
             Console.WriteLine("BATCH SUCCESSFUL");
             var stringResponse = await response3.Content.ReadAsStringAsync();
